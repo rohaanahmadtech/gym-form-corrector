@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    color: #111827;
+    /* Subtle dot-grid background */
+    background-color: #ffffff;
+    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+    background-size: 26px 26px;
+    background-attachment: fixed;
+  }
+  #root { min-height: 100vh; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+  .btn-dark {
+    @apply inline-flex items-center gap-2.5 bg-gray-900 hover:bg-black
+           text-white font-bold rounded-xl px-6 py-3
+           shadow-lg shadow-gray-900/20
+           transition-all duration-150 cursor-pointer select-none;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2.5 bg-white hover:bg-gray-50
+           border border-gray-200 hover:border-gray-400
+           text-gray-700 font-semibold rounded-xl px-6 py-3
+           shadow-sm transition-all duration-150 cursor-pointer select-none;
+  }
+  .section-label {
+    @apply text-xs font-bold tracking-widest uppercase text-gray-400;
+  }
+}
