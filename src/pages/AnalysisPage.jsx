@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Play, Pause, StopCircle, Shield, Warning, CheckCircle, CaretRight, Barbell, CircleNotch, VideoCamera, ArrowUp, ArrowDown } from '../components/Icons.jsx'
-import { saveSession } from './Progresspage.jsx'
+import { saveSession } from './ProgressPage.jsx'
 import { useMediaPipe }     from '../hooks/useMediaPipe.js'
 import { useExerciseModel } from '../hooks/useExerciseModel.js'
 import { extractFeatures, checkVisibility, computeJointAngles } from '../lib/featureExtraction.js'
