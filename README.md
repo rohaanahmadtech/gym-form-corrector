@@ -1,423 +1,453 @@
-🏋️ AI Gym Form Corrector
+# 🏋️ AI Gym Form Corrector
 
 <div align="center">
 
-Real-time AI-powered exercise recognition, pose tracking, rep counting, and form feedback — directly in the browser.
+### Real-Time AI-Powered Exercise Recognition & Form Analysis
 
+A browser-based fitness assistant that uses **Computer Vision**, **MediaPipe Pose Estimation**, and a **GRU Deep Learning model** to recognize exercises, count repetitions, analyze movement, and provide real-time form feedback.
 
+[![React](https://img.shields.io/badge/React-Frontend-61DAFB?logo=react\&logoColor=white)](https://react.dev/)
+[![TensorFlow.js](https://img.shields.io/badge/TensorFlow.js-ML_Inference-FF6F00?logo=tensorflow\&logoColor=white)](https://www.tensorflow.org/js)
+[![MediaPipe](https://img.shields.io/badge/MediaPipe-Pose_Estimation-0097A7?logo=google\&logoColor=white)](https://ai.google.dev/edge/mediapipe)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Styling-06B6D4?logo=tailwindcss\&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?logo=vercel\&logoColor=white)](https://gym-form-corrector.vercel.app/)
 
-
-
-
-
-
-🚀 Live Demo · 💻 Source Code
+### 🚀 [Live Demo](https://gym-form-corrector.vercel.app/)
 
 </div>
 
-📌 Overview
+---
 
-AI Gym Form Corrector is a browser-based fitness assistant that combines computer vision, pose estimation, and a custom GRU-based deep learning model to analyze exercise movements in real time.
+## 📌 Overview
 
-The application uses MediaPipe PoseLandmarker to detect 33 body landmarks from a webcam feed, converts them into a custom 210-dimensional feature representation, and feeds a 30-frame sequence into a TensorFlow.js GRU classifier to recognize the performed exercise.
+**AI Gym Form Corrector** is a real-time fitness web application that combines **pose estimation, feature engineering, temporal deep learning, and rule-based biomechanics**.
 
-On top of exercise recognition, the application uses joint-angle rules and movement-state logic to provide form feedback, count repetitions, calculate session performance, and track progress locally in the browser.
+The application captures exercise movement through the user's webcam, detects body landmarks using **MediaPipe PoseLandmarker**, and processes movement sequences using a trained **GRU neural network** running directly in the browser with **TensorFlow.js**.
 
-The selected baseline GRU achieved 95% video-level test accuracy on the held-out test videos used during model evaluation.
+The system currently supports:
 
-Supported exercises
+* 💪 **Bicep Curl**
+* 🤸 **Push-up**
+* 🏋️ **Squat**
 
-💪 Bicep Curl
+The final selected GRU model achieved **95% video-level test accuracy** on held-out evaluation videos.
 
-🤸 Push-up
+---
 
-🏋️ Squat
+## ✨ Key Features
 
-Note: Form feedback is based on pose geometry and joint-angle rules. The training dataset was designed for exercise classification rather than clinically validated correct/incorrect form assessment, so the application should not be treated as medical or professional fitness advice.
+* 🎥 Real-time webcam-based exercise analysis
+* 🧍 **33-point body pose detection** using MediaPipe
+* 🧠 GRU-based temporal exercise classification
+* 🎯 **95% video-level test accuracy**
+* 🔢 Automatic repetition counting
+* 📐 Joint-angle based form analysis
+* 💬 Real-time exercise feedback
+* 🦴 Live pose skeleton visualization
+* 📊 Workout session results and form scores
+* 📈 Progress tracking across workout sessions
+* 💾 Local browser storage for workout history
+* 🔒 Client-side video processing
+* ⚡ TensorFlow.js browser-based model inference
+* 📱 Responsive React interface
+* ☁️ Production deployment on Vercel
 
-✨ Key Features
+---
 
-Real-time pose estimation using MediaPipe PoseLandmarker
+## 🧠 How It Works
 
-Deep learning exercise classification with a GRU model converted to TensorFlow.js
+The application follows this pipeline:
 
-33-point body landmark tracking directly from the webcam
+**Webcam Input → Pose Detection → Feature Extraction → 30-Frame Sequence → GRU Classification → Form Analysis → Rep Counting → Live Feedback**
 
-210 engineered features per frame
+### 1. Pose Detection
 
-30-frame temporal sequence analysis
+MediaPipe PoseLandmarker detects **33 body landmarks** from each webcam frame.
 
-95% video-level test accuracy on held-out evaluation videos
+### 2. Pose Normalization
 
-Automatic repetition counting using movement-state logic
+Detected landmarks are normalized using:
 
-Rule-based form analysis using joint angles
+* Hip-centred coordinates
+* Torso-scale normalization
 
-Live skeleton visualization over the camera feed
+This helps reduce the effect of body position and distance from the camera.
 
-Exercise-specific feedback during workout sessions
+### 3. Feature Engineering
 
-Session scoring and workout summaries
+Each video frame is converted into a **210-dimensional feature vector**:
 
-Local progress tracking using browser storage
+| Feature                    | Dimensions |
+| -------------------------- | ---------: |
+| Landmark coordinates       |         99 |
+| Joint-angle features       |         12 |
+| Landmark velocity features |         99 |
+| **Total**                  |    **210** |
 
-Fully client-side inference — no backend is required for predictions
+### 4. Temporal Sequence
 
-Responsive React interface
+The system maintains a rolling sequence of:
 
-Production deployment on Vercel
+```text
+30 Frames × 210 Features
+```
 
-🧠 AI / Computer Vision Pipeline
+Model input shape:
 
-The project combines pose estimation, feature engineering, temporal deep learning, and rule-based biomechanics.
+```text
+(30, 210)
+```
 
-Webcam Video
-     │
-     ▼
-MediaPipe PoseLandmarker
-     │
-     ├── 33 body landmarks
-     │
-     ▼
-Pose Normalization
-     │
-     ├── Hip-centred coordinates
-     └── Torso-scale normalization
-     │
-     ▼
-Feature Engineering
-     │
-     ├── 99 landmark coordinates
-     ├── 12 joint-angle features
-     └── 99 landmark velocity features
-     │
-     ▼
-210 Features / Frame
-     │
-     ▼
-30-Frame Sequence Buffer
-     │
-     ▼
-Z-Score Standardization
-     │
-     ▼
-TensorFlow.js GRU Model
-     │
-     ▼
-Exercise Prediction
-[curl | pushup | squat]
-     │
-     ├── Rep Counter
-     ├── Form Rules
-     └── Session Analytics
+### 5. GRU Classification
 
-Feature vector
+The sequence is standardized using saved scaler parameters and passed to the trained **TensorFlow.js GRU model**.
 
-For every detected frame:
+The model predicts one of three exercise classes:
 
-33 landmarks × (x, y, z) = 99 features
-12 joint angles           = 12 features
-33 landmark velocities × 3 = 99 features
------------------------------------------
-Total                      = 210 features
+```text
+Bicep Curl
+Push-up
+Squat
+```
 
-A rolling sequence of 30 frames is used by the GRU model:
+### 6. Rep Counting & Form Analysis
 
-Input Shape: (30, 210)
+After pose detection:
 
-This allows the classifier to learn movement over time, rather than making a decision from a single image.
+* Exercise-specific joint angles are calculated
+* Movement states are tracked
+* Completed repetitions are counted
+* Form rules analyze exercise technique
+* Feedback is shown to the user in real time
 
-🏗️ System Architecture
+---
 
-┌─────────────────────────────────────────────────────────────┐
-│                       React Frontend                        │
-│                                                             │
-│  Webcam                                                     │
-│    │                                                        │
-│    ▼                                                        │
-│  MediaPipe PoseLandmarker                                   │
-│    │                                                        │
-│    ▼                                                        │
-│  Feature Extraction ──► Sequence Buffer ──► TF.js GRU       │
-│         │                                     │             │
-│         │                                     ▼             │
-│         │                              Exercise Class        │
-│         │                                                    │
-│         ├────────► Joint-Angle Form Rules                    │
-│         │                                                    │
-│         └────────► Rep Counting State Machine                │
-│                                                             │
-│                    ▼                                        │
-│        Live Feedback + Session Results                       │
-│                    │                                        │
-│                    ▼                                        │
-│              LocalStorage Progress                           │
-└─────────────────────────────────────────────────────────────┘
+## 🎯 Model Performance
 
-🛠️ Tech Stack
+| Metric                        |    Result |
+| ----------------------------- | --------: |
+| Exercise Classes              |         3 |
+| Features per Frame            |       210 |
+| Sequence Length               | 30 Frames |
+| Pose Landmarks                |        33 |
+| **Video-Level Test Accuracy** |   **95%** |
 
-Area
+The GRU model analyzes **movement across multiple frames** instead of classifying a single image, allowing it to capture the temporal characteristics of each exercise.
 
-Technology
+---
 
-Frontend
+## 🛠️ Tech Stack
 
-React 18
+| Category        | Technology               |
+| --------------- | ------------------------ |
+| Frontend        | React.js                 |
+| Build Tool      | Vite                     |
+| Styling         | Tailwind CSS             |
+| Pose Estimation | MediaPipe PoseLandmarker |
+| Deep Learning   | GRU Neural Network       |
+| ML Inference    | TensorFlow.js            |
+| Computer Vision | MediaPipe Tasks Vision   |
+| Language        | JavaScript               |
+| Browser Storage | LocalStorage             |
+| Deployment      | Vercel                   |
 
-Build Tool
+---
 
-Vite
+## 📁 Project Structure
 
-Styling
-
-Tailwind CSS
-
-Pose Estimation
-
-MediaPipe Tasks Vision
-
-ML Inference
-
-TensorFlow.js
-
-Exercise Model
-
-GRU sequence classifier
-
-Computer Vision Input
-
-Browser Webcam API
-
-Progress Storage
-
-LocalStorage
-
-Deployment
-
-Vercel
-
-🔍 How It Works
-
-The user selects Bicep Curl, Push-up, or Squat.
-
-The browser requests access to the user's webcam.
-
-MediaPipe detects 33 pose landmarks from each frame.
-
-Landmark coordinates are normalized to reduce sensitivity to body position and scale.
-
-The application calculates joint-angle and motion features.
-
-A 210-feature vector is generated for each frame.
-
-The latest 30 frames form one temporal sequence.
-
-The sequence is standardized using the training-time scaler parameters.
-
-The TensorFlow.js GRU model predicts the exercise class.
-
-Joint-angle rules evaluate movement quality while a state machine counts repetitions.
-
-Session statistics and feedback are displayed to the user.
-
-Workout progress can be retained locally in the browser.
-
-🚀 Live Demo
-
-The project is deployed on Vercel:
-
-👉 https://gym-form-corrector.vercel.app/
-
-For the best experience:
-
-Use a laptop/desktop with a webcam.
-
-Allow camera permission when prompted.
-
-Keep your full body visible.
-
-Use a well-lit environment.
-
-Position the camera from the side for the supported exercises.
-
-💻 Run Locally
-
-1. Clone the repository
-
-git clone https://github.com/rohaanahmadtech/gym-form-corrector.git
-cd gym-form-corrector
-
-2. Install dependencies
-
-npm install
-
-3. Verify AI model files
-
-The application expects the trained TensorFlow.js model and scaler files inside public/.
-
-public/
-├── model/
-│   ├── model.json
-│   └── group1-shard1of1.bin
-└── scaler_params.json
-
-If the converted TensorFlow.js model contains multiple .bin shards, keep all of them in the public/model/ directory.
-
-4. Start the development server
-
-npm run dev
-
-Then open:
-
-http://localhost:5173
-
-Allow camera access when requested.
-
-📦 Production Build
-
-Create an optimized production build with:
-
-npm run build
-
-Preview it locally with:
-
-npm run preview
-
-☁️ Deployment
-
-The application is currently deployed using Vercel.
-
-Because MediaPipe uses browser/WASM features that may require cross-origin isolation, the deployment includes the required security headers.
-
-Example vercel.json:
-
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin"
-        },
-        {
-          "key": "Cross-Origin-Embedder-Policy",
-          "value": "require-corp"
-        }
-      ]
-    }
-  ]
-}
-
-📂 Project Structure
-
+```text
 gym-form-corrector/
 │
 ├── public/
-│   ├── model/                 # TensorFlow.js model files
-│   └── scaler_params.json     # Feature standardization parameters
+│   │
+│   ├── images/
+│   │   ├── logo.jpeg
+│   │   ├── hero.jpg
+│   │   ├── curl.jpg
+│   │   ├── pushup.jpg
+│   │   └── squat.jpg
+│   │
+│   ├── model/
+│   │   ├── model.json
+│   │   └── group1-shard1of1.bin
+│   │
+│   └── scaler_params.json
 │
 ├── src/
-│   ├── components/            # Reusable UI components
-│   ├── hooks/                 # MediaPipe / model-related React hooks
-│   ├── lib/                   # Feature extraction, rules & rep logic
-│   ├── pages/                 # Application screens
+│   │
+│   ├── components/
+│   │   ├── Icons.jsx
+│   │   └── Navbar.jsx
+│   │
+│   ├── hooks/
+│   │   ├── useExerciseModel.js
+│   │   └── useMediaPipe.js
+│   │
+│   ├── lib/
+│   │   ├── constants.js
+│   │   ├── featureExtraction.js
+│   │   ├── formRules.js
+│   │   └── repCounter.js
+│   │
+│   ├── pages/
+│   │   ├── LandingPage.jsx
+│   │   ├── ExercisePage.jsx
+│   │   ├── AnalysisPage.jsx
+│   │   ├── ResultsPage.jsx
+│   │   ├── ProgressPage.jsx
+│   │   └── HowItWorksPage.jsx
+│   │
 │   ├── App.jsx
+│   ├── index.css
 │   └── main.jsx
 │
+├── .gitignore
+├── index.html
 ├── package.json
+├── package-lock.json
+├── postcss.config.js
 ├── tailwind.config.js
+├── vercel.json
 ├── vite.config.js
-└── vercel.json
+└── README.md
+```
 
-🎯 Technical Highlights
+### Important Files
 
-Model Performance
+| File                   | Purpose                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| `useMediaPipe.js`      | Loads MediaPipe PoseLandmarker and processes webcam frames       |
+| `useExerciseModel.js`  | Loads the TensorFlow.js GRU model and performs predictions       |
+| `featureExtraction.js` | Converts landmarks into the 210-feature model input              |
+| `formRules.js`         | Contains exercise-specific form analysis rules                   |
+| `repCounter.js`        | Handles repetition counting using movement states                |
+| `constants.js`         | Stores pose indices, configuration, and shared constants         |
+| `AnalysisPage.jsx`     | Integrates webcam, AI inference, form analysis, and rep counting |
+| `ProgressPage.jsx`     | Displays stored workout progress                                 |
+| `scaler_params.json`   | Stores training-time feature normalization parameters            |
+| `model.json`           | TensorFlow.js GRU model definition                               |
+| `group1-shard1of1.bin` | Trained model weights                                            |
 
-The final selected GRU model achieved 95% video-level test accuracy on the held-out test set during evaluation. This metric represents classification performance after aggregating predictions at the video level.
+---
 
-1. Temporal exercise recognition
+## 💻 Run Locally
 
-Instead of classifying a single pose image, the model processes a sequence of 30 frames. This allows it to capture how a movement changes over time.
+### Prerequisites
 
-2. Custom feature engineering
+Make sure you have installed:
 
-Raw MediaPipe outputs are transformed into a compact representation combining:
+* Node.js
+* npm
+* Git
+* A modern browser with webcam access
 
-normalized pose coordinates,
+### 1. Clone the Repository
 
-biomechanically useful joint angles,
+```bash
+git clone https://github.com/rohaanahmadtech/gym-form-corrector.git
+```
 
-frame-to-frame body motion.
+### 2. Navigate to the Project
 
-3. Browser-side AI inference
+```bash
+cd gym-form-corrector
+```
 
-The trained model runs with TensorFlow.js directly in the browser, avoiding a dedicated inference server and reducing network dependency during predictions.
+### 3. Install Dependencies
 
-4. Hybrid AI + rule-based analysis
+```bash
+npm install
+```
 
-The architecture separates two responsibilities:
+### 4. Start Development Server
 
-GRU model: identifies the exercise being performed.
+```bash
+npm run dev
+```
 
-Joint-angle rules: evaluates movement form and contributes to rep-counting logic.
+Open:
 
-This makes the system easier to interpret and extend than relying on a single black-box model for every task.
+```text
+http://localhost:5173
+```
 
-⚠️ Current Scope & Limitations
+Allow camera permission when prompted.
 
-Supports Bicep Curl, Push-up, and Squat.
+---
 
-Classification quality depends on camera placement, lighting, and pose visibility.
+## 🏃 How to Use
 
-Rep counting requires enough visible joint movement to detect exercise states.
+1. Open the application.
+2. Click **Start Training**.
+3. Choose an exercise:
 
-Form feedback is based on engineered joint-angle rules.
+   * Bicep Curl
+   * Push-up
+   * Squat
+4. Allow webcam access.
+5. Position yourself according to the camera instructions.
+6. Start performing the exercise.
+7. The application will provide:
 
-The system is an educational AI fitness project and is not medical advice or a substitute for a certified trainer.
+   * Exercise recognition
+   * Pose tracking
+   * Rep counting
+   * Form analysis
+   * Live feedback
+8. Complete the session to view your results and progress.
 
-🔮 Future Improvements
+---
 
-Add more exercises and exercise variations
+## 📷 Recommended Camera Setup
 
-Train a dedicated correct-vs-incorrect form model
+For better pose detection:
 
-Add per-joint form error classification
+### Bicep Curl
 
-Support personalized range-of-motion thresholds
+```text
+Side View
+Full body visible
+Camera approximately at waist height
+```
 
-Add workout history with a cloud database
+### Push-up
 
-Add authentication and user profiles
+```text
+Side View
+Low camera position
+Full body visible
+```
 
-Add mobile/PWA optimization
+### Squat
 
-Add voice coaching and real-time audio feedback
+```text
+Side View
+Full body visible
+Camera approximately at hip height
+```
 
-Add richer progress analytics and charts
+For the best results, use a **well-lit environment** and make sure important body joints remain visible.
 
-Benchmark model performance across different camera angles and environments
+---
 
-👨‍💻 Developer
+## 🔒 Privacy
 
-Rohaan Ahmad
+Pose estimation and AI inference are performed **inside the user's browser**.
 
-AI / Machine Learning & Computer Science
+The webcam feed is processed locally for real-time analysis rather than being uploaded to a dedicated inference server.
 
-GitHub: @rohaanahmadtech
+---
 
-Portfolio: devrohaan.vercel.app
+## 🚀 Production Build
 
-Project Demo: AI Gym Form Corrector
+Create a production build using:
 
-⭐ Support
+```bash
+npm run build
+```
 
-If you found this project useful or interesting, consider giving the repository a star ⭐.
+Preview the production build locally:
 
-It helps showcase the project and supports further development.
+```bash
+npm run preview
+```
+
+---
+
+## ☁️ Deployment
+
+The application is deployed on **Vercel**.
+
+### Live Application
+
+🔗 **https://gym-form-corrector.vercel.app/**
+
+The project includes a `vercel.json` configuration for deployment requirements related to browser-based MediaPipe processing.
+
+---
+
+## 🧩 Core AI Components
+
+### MediaPipe PoseLandmarker
+
+MediaPipe detects the user's body pose and provides **33 landmarks** containing spatial coordinates and visibility information.
+
+### Feature Extraction
+
+The raw landmarks are transformed into:
+
+```text
+Normalized Coordinates
+        +
+Joint Angles
+        +
+Movement Velocities
+        ↓
+210 Features / Frame
+```
+
+### GRU Model
+
+A **Gated Recurrent Unit (GRU)** neural network processes a sequence of 30 frames.
+
+GRUs are suitable for this task because exercise recognition depends on **movement over time**, not only a single body pose.
+
+### Form Analysis
+
+Exercise form is evaluated separately using interpretable joint-angle rules.
+
+This allows the system to use:
+
+```text
+Deep Learning → Exercise Recognition
+
+Rule-Based Logic → Form Analysis + Rep Counting
+```
+
+---
+
+## ⚠️ Current Limitations
+
+* Currently supports three exercises.
+* Pose accuracy can be affected by poor lighting or camera placement.
+* Important joints must remain visible to the camera.
+* Form analysis uses predefined joint-angle rules.
+* The classification model identifies exercise type rather than directly classifying correct vs incorrect form.
+* The application is intended as an AI fitness project and is not medical advice or a replacement for a certified fitness professional.
+
+---
+
+## 🔮 Future Improvements
+
+* Add more exercises
+* Train a dedicated correct-vs-incorrect form classification model
+* Detect specific form mistakes using learned models
+* Personalized range-of-motion thresholds
+* Voice-based real-time coaching
+* User authentication
+* Cloud-based workout history
+* Advanced progress analytics
+* Mobile/PWA optimization
+* Personalized workout recommendations
+
+---
+
+## 👨‍💻 Developer
+
+### Rohaan Ahmad
+
+**Computer Science | AI / Machine Learning**
+
+* 🌐 Portfolio: [devrohaan.vercel.app](https://devrohaan.vercel.app/)
+* 💻 GitHub: [github.com/rohaanahmadtech](https://github.com/rohaanahmadtech)
+* 🚀 Live Project: [gym-form-corrector.vercel.app](https://gym-form-corrector.vercel.app/)
+
+---
 
 <div align="center">
 
-Built with React, MediaPipe, TensorFlow.js, and Computer Vision.
+### ⭐ If you found this project useful, consider giving it a star!
+
+**Built with React · MediaPipe · TensorFlow.js · GRU · Computer Vision**
 
 </div>
